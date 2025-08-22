@@ -1,5 +1,5 @@
 from simulation import Simulation
-from utils import aggregate_species_by_depth, average_depth_aggs
+from utils import aggregate_species_by_depth, average_aggregations
 from visualize import plot_four_configs, create_interactive_dashboard, EnhancedVisualizer
 
 def get_avg_depth_aggs(n_runs, n_creatures=50, generations=30, max_depth=6000, step=50):
@@ -16,7 +16,7 @@ def get_avg_depth_aggs(n_runs, n_creatures=50, generations=30, max_depth=6000, s
         agg = aggregate_species_by_depth(sim.creatures, max_depth, step)
         all_aggs.append(agg)
     
-    avg_agg = average_depth_aggs(all_aggs, depths, species_types)
+    avg_agg = average_aggregations(all_aggs, depths, species_types)
     return avg_agg, depths, species_types
 
 def run_static_analysis():
