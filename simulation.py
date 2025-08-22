@@ -13,7 +13,7 @@ class Simulation:
 
     def evaluate_fitness(self, creature):
         layer = self.env.get_layer(creature.depth)
-        print(f"Creature depth: {creature.depth}, Layer: {layer.name}, food_type: {layer.food_type}")
+        # print(f"Creature depth: {creature.depth}, Layer: {layer.name}, food_type: {layer.food_type}")
         fitness = 0.1  # base fitness
         fitness += creature.calculate_compatibility(layer)
         creature.fitness = max(0.1, fitness)
@@ -57,15 +57,17 @@ class Simulation:
         self.generation_count += 1
         self.log_species_diversity()
 
-    def run(self):
-        print(f"Starting simulation with {len(self.creatures)} creatures for {self.generations} generations")
+    def run(self, progress_callback=None):
+        # print(f"Starting simulation with {len(self.creatures)} creatures for {self.generations} generations")
         for gen in range(self.generations):
             self.run_generation()
+            if progress_callback:
+                progress_callback()  # Notify progress externally
             if gen % 5 == 0 or gen == self.generations - 1:
                 alive_count = sum(c.alive for c in self.creatures)
                 avg_fitness = sum(c.fitness for c in self.creatures) / len(self.creatures)
-                print(f"Generation {gen}: {alive_count} survivors, avg fitness {avg_fitness:.2f}")
-        print("Simulation complete.")
+                # print(f"Generation {gen}: {alive_count} survivors, avg fitness {avg_fitness:.2f}")
+        # print("Simulation complete.")
 
     def log_species_diversity(self):
         species_count = {}
