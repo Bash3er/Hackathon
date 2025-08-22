@@ -413,8 +413,8 @@ def plot_detailed_depth_graph(avg_agg, depths, species_types, n_runs, ax=None):
     plt.tight_layout()
 
 def plot_four_configs(avg_aggs, depths, species_types, configs):
-    """Enhanced four-panel comparison"""
-    fig, axs = plt.subplots(2, 2, figsize=(20, 14), sharex=True, sharey=True)
+    """Enhanced four-panel comparison with clean layout"""
+    fig, axs = plt.subplots(2, 2, figsize=(18, 12), sharex=True, sharey=True)
     axs = axs.flatten()
     
     for i, nrun in enumerate(configs):
@@ -424,8 +424,12 @@ def plot_four_configs(avg_aggs, depths, species_types, configs):
             axs[i].text(0.5, 0.5, f'Plot error: {str(e)}', 
                        ha='center', va='center', transform=axs[i].transAxes)
     
-    plt.suptitle("Ocean Ecosystem Evolution Comparison", fontsize=16, fontweight='bold')
-    plt.tight_layout()
+    # Add a big title with space
+    fig.suptitle("Ocean Ecosystem Evolution Comparison", fontsize=20, fontweight='bold')
+
+    # Adjust layout to prevent overlap with suptitle & legends
+    plt.tight_layout(rect=[0, 0, 1, 0.96])  
+
     plt.show()
 
 def create_interactive_dashboard(simulation):
