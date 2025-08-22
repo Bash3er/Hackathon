@@ -3,8 +3,6 @@ from utils import aggregate_species_by_depth, average_aggregations
 from visualize import plot_four_configs, create_interactive_dashboard, EnhancedVisualizer
 from tqdm import tqdm
 
-from tqdm import tqdm
-
 def get_avg_depth_aggs(n_runs, n_creatures=50, generations=30, max_depth=6000, step=50):
     depths = list(range(0, max_depth + 1, step))
     species_types = ["eyes", "bioluminescence", "plants", "no_eyes_animal"]
