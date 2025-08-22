@@ -12,130 +12,7 @@ class EnhancedVisualizer:
         self.animation = None
         self.data_history = []
         self.is_playing = False
-        
-    def plot_detailed_species_evolution(self, simulation, real_time=False):
-        """Enhanced species evolution plot with real-time capability"""
-        if real_time:
-            self._setup_realtime_plot(simulation)
-        else:
-            self._plot_final_species_state(simulation)
     
-    def _setup_realtime_plot(self, simulation):
-        """Setup real-time plotting with controls"""
-        # Fix: Handle different seaborn versions
-        try:
-            plt.style.use('seaborn-v0_8')
-        except OSError:
-            try:
-                plt.style.use('seaborn')
-            except OSError:
-                plt.style.use('default')
-        
-        self.fig = plt.figure(figsize=(20, 12))
-        
-        # Create subplots with proper spacing
-        gs = self.fig.add_gridspec(3, 4, height_ratios=[2, 1, 1], width_ratios=[2, 2, 1, 1],
-                                   hspace=0.3, wspace=0.3)
-        
-        # Main evolution plot
-        self.ax_main = self.fig.add_subplot(gs[0, :2])
-        
-        # Species diversity plot
-        self.ax_diversity = self.fig.add_subplot(gs[0, 2])
-        
-        # Fitness distribution
-        self.ax_fitness = self.fig.add_subplot(gs[0, 3])
-        
-        # Trait distribution heatmaps
-        self.ax_traits = self.fig.add_subplot(gs[1, :2])
-        
-        # Population stats
-        self.ax_pop = self.fig.add_subplot(gs[1, 2:])
-        
-        # Environmental zones
-        self.ax_zones = self.fig.add_subplot(gs[2, :])
-        
-        # Add controls with error handling
-        try:
-            self._add_interactive_controls()
-        except Exception as e:
-            print(f"Warning: Could not add interactive controls: {e}")
-        
-        # Set initial playing state
-        self.is_playing = True
-        
-        # Start animation
-        self.animation = animation.FuncAnimation(
-            self.fig, self._update_realtime_plot, frames=simulation.generations,
-            interval=1000, repeat=True, fargs=(simulation,)
-        )
-        
-        plt.tight_layout()
-        plt.show()
-    
-    def _add_interactive_controls(self):
-        """Add interactive controls for real-time visualization"""
-        try:
-            # Play/Pause button
-            ax_button = plt.axes([0.85, 0.02, 0.1, 0.04])
-            self.button = Button(ax_button, 'Play/Pause')
-            self.button.on_clicked(self._toggle_animation)
-            
-            # Speed slider
-            ax_speed = plt.axes([0.2, 0.02, 0.3, 0.03])
-            self.speed_slider = Slider(ax_speed, 'Speed', 0.1, 3.0, valinit=1.0)
-            
-            # Species filter checkboxes
-            ax_check = plt.axes([0.02, 0.7, 0.15, 0.25])
-            species_labels = ['Photosynthetic', 'Bioluminescent', 'Eyes', 'No Eyes', 
-                             'Echolocation', 'Filter Feeders', 'Predators', 'Chemosynthetic']
-            self.species_check = CheckButtons(ax_check, species_labels, 
-                                            [True] * len(species_labels))
-        except Exception as e:
-            print(f"Could not create interactive controls: {e}")
-    
-    def _update_realtime_plot(self, frame, simulation):
-        """Update all plots in real-time"""
-        if not self.is_playing:
-            return
-            
-        # Clear all axes
-        for ax in [self.ax_main, self.ax_diversity, self.ax_fitness, 
-                  self.ax_traits, self.ax_pop, self.ax_zones]:
-            ax.clear()
-        
-        # Get current generation data safely
-        if hasattr(simulation, 'species_log') and simulation.species_log:
-            current_gen = min(frame, len(simulation.species_log) - 1)
-            if current_gen < 0:
-                return
-            gen_data = simulation.species_log[current_gen]
-        else:
-            gen_data = {'generation': frame, 'species': {}, 'total_species': 0}
-            current_gen = frame
-        
-        # Main evolution plot - species by depth
-        self._plot_species_depth_scatter(simulation.creatures, self.ax_main)
-        
-        # Species diversity over time
-        if hasattr(simulation, 'species_log') and simulation.species_log:
-            self._plot_species_diversity_timeline(simulation.species_log[:current_gen+1], self.ax_diversity)
-        
-        # Fitness distribution
-        self._plot_fitness_histogram(simulation.creatures, self.ax_fitness)
-        
-        # Trait distribution heatmap
-        self._plot_trait_heatmap(simulation.creatures, self.ax_traits)
-        
-        # Population statistics
-        self._plot_population_stats(gen_data, self.ax_pop)
-        
-        # Environmental zones with species
-        self._plot_environmental_zones(simulation.creatures, self.ax_zones)
-        
-        self.fig.suptitle(f'Ocean Ecosystem Evolution - Generation {current_gen}', 
-                         fontsize=16, fontweight='bold')
-        
     def _plot_species_depth_scatter(self, creatures, ax):
         """Enhanced scatter plot showing all traits"""
         # Color mapping for vision types
@@ -306,7 +183,7 @@ class EnhancedVisualizer:
         ax.set_title('Environmental Zones & Population')
         ax.invert_yaxis()
     
-    def _plot_final_species_state(self, simulation):
+    def plot_detailed_species_evolution(self, simulation):
         """Plot final state of species (non-real-time)"""
         fig, axs = plt.subplots(2, 3, figsize=(18, 12))
         axs = axs.flatten()
@@ -324,47 +201,6 @@ class EnhancedVisualizer:
         plt.tight_layout()
         plt.show()
     
-    def _toggle_animation(self, event):
-        """Toggle play/pause for animation"""
-        self.is_playing = not self.is_playing
-    
-    def export_species_report(self, simulation, filename="species_report.txt"):
-        """Export detailed species report"""
-        try:
-            species_summary = simulation.get_species_summary()
-            
-            with open(filename, 'w') as f:
-                f.write("=== OCEAN ECOSYSTEM EVOLUTION REPORT ===\n\n")
-                f.write(f"Simulation completed: {getattr(simulation, 'generation_count', 'Unknown')} generations\n")
-                f.write(f"Total species evolved: {len(species_summary)}\n\n")
-                
-                f.write("SPECIES DETAILS:\n")
-                f.write("-" * 50 + "\n")
-                
-                for species_name, info in sorted(species_summary.items(), 
-                                               key=lambda x: x[1]['count'], reverse=True):
-                    f.write(f"\n{species_name}:\n")
-                    f.write(f"  Population: {info['count']}\n")
-                    f.write(f"  Avg Fitness: {info['avg_fitness']:.2f}\n")
-                    f.write(f"  Depth Range: {info['depth_range'][0]}m - {info['depth_range'][1]}m\n")
-                    
-                    if hasattr(info['example'], 'get_description'):
-                        f.write(f"  Description: {info['example'].get_description()}\n")
-                    
-                    # Trait summary
-                    traits = info['example'].traits
-                    f.write("  Key Traits:\n")
-                    f.write(f"    Vision: {traits['vision']}\n")
-                    f.write(f"    Feeding: {traits['food_strategy']}\n")
-                    f.write(f"    Body: {traits['body_type']}\n")
-                    f.write(f"    Locomotion: {traits['locomotion']}\n")
-                    f.write(f"    Size: {traits['size']}\n")
-                    f.write(f"    Defense: {traits['defense_mechanism']}\n")
-            
-            print(f"Species report exported to {filename}")
-        except Exception as e:
-            print(f"Error exporting species report: {e}")
-
 # Enhanced plotting functions for static analysis
 def plot_detailed_depth_graph(avg_agg, depths, species_types, n_runs, ax=None):
     """Enhanced depth graph with more visual details"""
@@ -431,9 +267,3 @@ def plot_four_configs(avg_aggs, depths, species_types, configs):
     plt.tight_layout(rect=[0, 0, 1, 0.96])  
 
     plt.show()
-
-def create_interactive_dashboard(simulation):
-    """Create an interactive dashboard for exploration"""
-    visualizer = EnhancedVisualizer()
-    visualizer.plot_detailed_species_evolution(simulation, real_time=True)
-    return visualizer

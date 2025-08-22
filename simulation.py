@@ -58,7 +58,6 @@ class Simulation:
         self.log_species_diversity()
 
     def run(self, progress_callback=None):
-        # print(f"Starting simulation with {len(self.creatures)} creatures for {self.generations} generations")
         for gen in range(self.generations):
             self.run_generation()
             if progress_callback:
@@ -66,8 +65,6 @@ class Simulation:
             if gen % 5 == 0 or gen == self.generations - 1:
                 alive_count = sum(c.alive for c in self.creatures)
                 avg_fitness = sum(c.fitness for c in self.creatures) / len(self.creatures)
-                # print(f"Generation {gen}: {alive_count} survivors, avg fitness {avg_fitness:.2f}")
-        # print("Simulation complete.")
 
     def log_species_diversity(self):
         species_count = {}
