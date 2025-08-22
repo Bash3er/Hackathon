@@ -13,11 +13,11 @@ class Simulation:
 
     def evaluate_fitness(self, creature):
         layer = self.env.get_layer(creature.depth)
+        print(f"Creature depth: {creature.depth}, Layer: {layer.name}, food_type: {layer.food_type}")
         fitness = 0.1  # base fitness
         fitness += creature.calculate_compatibility(layer)
-        # You can extend this here with metabolic, tolerance, etc.
-        # Clamp fitness to positive
         creature.fitness = max(0.1, fitness)
+
 
     def run_generation(self):
         for creature in self.creatures:

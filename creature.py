@@ -127,6 +127,8 @@ class Creature:
         depth = self.depth
         vision = self.traits["vision"]
         strategy = self.traits["food_strategy"]
+        
+        print(f"Calc comp: depth={depth}, vision={vision}, food_strategy={strategy}, layer_food_type={layer.food_type}")
 
         # Vision compatibility
         if depth < 200:  # Euphotic
@@ -204,6 +206,7 @@ class Creature:
         if self.traits["body_type"] in synergy_map.get(self.traits["locomotion"], []):
             score += 0.5
 
+        print(f"Final compatibility score: {score}")
         return score
 
     def __str__(self):

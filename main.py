@@ -1,46 +1,44 @@
 from simulation import Simulation
 from utils import aggregate_species_by_depth, average_aggregations
 from visualize import plot_four_configs, create_interactive_dashboard, EnhancedVisualizer
+from tqdm import tqdm
 
 def get_avg_depth_aggs(n_runs, n_creatures=50, generations=30, max_depth=6000, step=50):
-    depths = list(range(0, max_depth+1, step))
+    depths = list(range(0, max_depth + 1, step))
     species_types = ["eyes", "bioluminescence", "plants", "no_eyes_animal"]
     all_aggs = []
-    
-    print(f"Running {n_runs} simulations...")
-    for i in range(n_runs):
-        if i % 10 == 0:
-            print(f"  Simulation {i+1}/{n_runs}")
+
+    for i in tqdm(range(n_runs), desc="Running simulations", unit="sim", disable=True):
         sim = Simulation(n_creatures=n_creatures, generations=generations)
         sim.run()
         agg = aggregate_species_by_depth(sim.creatures, max_depth, step)
         all_aggs.append(agg)
-    
+
     avg_agg = average_aggregations(all_aggs, depths, species_types)
     return avg_agg, depths, species_types
 
 def run_static_analysis():
-    """Run the four-panel static analysis"""
     print("Running static analysis with four different configurations...")
+
     step = 50
     max_depth = 6000
     configs = [50, 100, 500, 1000]
     avg_aggs = []
-    
-    for n_runs in configs:
-        print(f"\nProcessing configuration: {n_runs} runs")
-        avg_agg, depths, species_types = get_avg_depth_aggs(n_runs, step=step, max_depth=max_depth)
-        avg_aggs.append(avg_agg)
-    
+
+    for avg_agg in tqdm((get_avg_depth_aggs(n_runs, step=step, max_depth=max_depth) for n_runs in configs),
+                        desc="Processing configurations", total=len(configs), unit="config", disable=True):
+        avg_aggs.append(avg_agg[0])  # avg_agg returned is tuple (avg_agg, depths, species_types)
+
     print("Generating static analysis plots...")
-    plot_four_configs(avg_aggs, depths, species_types, configs)
+    plot_four_configs(avg_aggs, avg_agg[1], avg_agg[2], configs)
+
 
 def run_interactive_depth_explorer():
     """Run the interactive depth slider"""
     print("Launching interactive depth explorer...")
     try:
-        from interactive_depth import run_interactive_depth
-        run_interactive_depth()
+        from interactive_depth import run_interactive
+        run_interactive()
     except ImportError:
         print("Interactive depth module not found. Please ensure interactive_depth.py is in the same folder.")
     except Exception as e:
