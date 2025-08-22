@@ -30,8 +30,7 @@ def run_static_analysis():
 
     step = 50
     max_depth = 6000
-    # configs = [50, 100, 500, 1000]
-    configs = [50, 100, 200, 300]
+    configs = [50, 100, 500, 1000]
     avg_aggs = []
 
     for avg_agg in tqdm((get_avg_depth_aggs(n_runs, step=step, max_depth=max_depth) for n_runs in configs),
