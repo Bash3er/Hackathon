@@ -1,5 +1,5 @@
-# Ignore credentials
-Credentials.txt
+# # Ignore credentials
+# Credentials.txt
 
 # Ignore Python cache
 __pycache__/
