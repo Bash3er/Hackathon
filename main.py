@@ -3,18 +3,28 @@ from utils import aggregate_species_by_depth, average_aggregations
 from visualize import plot_four_configs, create_interactive_dashboard, EnhancedVisualizer
 from tqdm import tqdm
 
+from tqdm import tqdm
+
 def get_avg_depth_aggs(n_runs, n_creatures=50, generations=30, max_depth=6000, step=50):
     depths = list(range(0, max_depth + 1, step))
     species_types = ["eyes", "bioluminescence", "plants", "no_eyes_animal"]
     all_aggs = []
 
-    for i in tqdm(range(n_runs), desc="Running simulations", unit="sim", disable=True):
+    total_gens = n_runs * generations
+    pbar = tqdm(total=total_gens, desc=f"{n_runs} generations", unit="gen")
+
+    def progress_callback():
+        pbar.update(1)
+
+    for i in range(n_runs):
         sim = Simulation(n_creatures=n_creatures, generations=generations)
-        sim.run()
+        sim.run(progress_callback=progress_callback)
         agg = aggregate_species_by_depth(sim.creatures, max_depth, step)
         all_aggs.append(agg)
 
+    pbar.close()
     avg_agg = average_aggregations(all_aggs, depths, species_types)
+
     return avg_agg, depths, species_types
 
 def run_static_analysis():
@@ -22,7 +32,7 @@ def run_static_analysis():
 
     step = 50
     max_depth = 6000
-    configs = [50, 100, 500, 1000]
+    configs = [50, 100, 500, 1000, 3000]
     avg_aggs = []
 
     for avg_agg in tqdm((get_avg_depth_aggs(n_runs, step=step, max_depth=max_depth) for n_runs in configs),
