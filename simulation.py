@@ -107,3 +107,21 @@ class Simulation:
             summary[sp]['fitness'] /= summary[sp]['count']
 
         return summary
+    
+    def export_species_report(self, filename="species_report.txt"):
+        try:
+            summary = self.get_species_summary()
+            with open(filename, "w") as f:
+                f.write("=== OCEAN ECOSYSTEM EVOLUTION REPORT ===\n\n")
+                f.write(f"Simulation completed: {self.generation_count} generations\n")
+                f.write(f"Total species evolved: {len(summary)}\n\n")
+                f.write("SPECIES DETAILS:\n")
+                f.write("-" * 50 + "\n")
+                for species_name, info in sorted(summary.items(), key=lambda x: x[1]['count'], reverse=True):
+                    f.write(f"\n{species_name}:\n")
+                    f.write(f" Population: {info['count']}\n")
+                    f.write(f" Avg Fitness: {info['fitness']:.2f}\n")
+                    f.write(f" Depth Range: {info['depth_range']}m - {info['depth_range'][1]}m\n")
+            print(f"Species report exported to {filename}")
+        except Exception as e:
+            print(f"Error exporting species report: {e}")

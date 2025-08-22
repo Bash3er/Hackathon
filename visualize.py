@@ -222,7 +222,7 @@ class EnhancedVisualizer:
                 trait_data['metabolic_rate'].append(creature.traits['metabolic_rate'])
                 trait_data['oxygen_efficiency'].append(creature.traits['oxygen_efficiency'])
                 trait_data['pressure_tolerance'].append(creature.traits['pressure_tolerance'])
-                trait_data['light_production'].append(creature.traits['light_production'])
+                trait_data['light_intensity'].append(creature.traits['light_intensity'])
         
         if trait_data and len(trait_data['depth']) > 1:
             try:
